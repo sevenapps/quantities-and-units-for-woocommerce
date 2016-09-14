@@ -76,6 +76,7 @@ class WC_Quantities_and_Units_Quantity_Meta_Boxes {
 			echo "<div class='overide-rule rule-message'>The values below are being used because you've chosen to override any applied rules for this product.</div>";
 
 		} elseif ( $rule == 'sitewide' ) {
+			// TODO: This looks like the place (to start) to fix the "Edit Product" page rule overrides
 			?>
 			<?php $values = wcqu_get_value_from_rule( 'all', $pro, $rule ); ?>
 			<div class="active-rule">

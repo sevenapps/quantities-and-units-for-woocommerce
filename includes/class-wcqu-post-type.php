@@ -194,6 +194,7 @@ class WC_Quantities_and_Units_Quantity_Rule_Post_Type {
 		// Create Nonce Field
 		wp_nonce_field( plugin_basename( __FILE__ ), '_wpbo_rule_value_nonce' );
 
+		// TODO: Add checkbox below for "Allow Multiple Products (in category) to Fullfill Minimum"
 		?>
 			<div class="wpbo-meta">
 				<label for="min">Minimum</label>
@@ -470,6 +471,8 @@ class WC_Quantities_and_Units_Quantity_Rule_Post_Type {
 	*	Save Rule Meta Values
 	*/
 	public function save_quantity_rule_meta( $post_id ) {
+
+		// TODO: Will need to save the new "allow multi product" field below
 
 		// Validate Post Type
 		if ( ! isset( $_POST['post_type'] ) or $_POST['post_type'] !== 'quantity-rule' ) {

@@ -45,6 +45,7 @@ class WC_Quantities_and_Units_Quantity_Validations {
 	*/
 	public function update_cart_validation( $passed, $cart_item_key, $values, $quantity ) {
 
+		// TODO: This might be the place to udpate/fix notices in the cart
 		return $this->validate_single_product( $passed, $values['product_id'], $quantity, true, $values['variation_id'], $values['variation'] );
 
 	}

@@ -16,6 +16,12 @@ class WC_Quantities_and_Units_Filters {
 		add_filter( 'woocommerce_quantity_input_args', array( $this, 'input_set_all_values' ), 10, 2 );
 
 		add_filter( 'woocommerce_loop_add_to_cart_args', array( $this, 'woocommerce_loop_add_to_cart_args' ), 10, 2 );
+
+		// TODO: Use filter below to output the min/max values onto the page
+		// add_filter( 'woocommerce_get_price_html' , array( $this , 'price_html_filter' ) , 10 , 2 );
+		// price_html_filter() should add something like: "<span class="wholesale_price_minimum_order_quantity">Min: 4</span>"
+		// NOTE: Need to check and see what the WC filter does and if we need to copy and modify that.
+		// could look at what 'woocommerce-wholesales-prices( and/or -premium)' is doing with this filter
 	}
 
 	/**
