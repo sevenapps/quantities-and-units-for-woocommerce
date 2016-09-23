@@ -190,11 +190,16 @@ class WC_Quantities_and_Units_Quantity_Rule_Post_Type {
 		$max_oos = get_post_meta( $post->ID, '_max_oos', true );
 		$step = get_post_meta( $post->ID, '_step', true);
 		$priority = get_post_meta( $post->ID, '_priority', true);
+		$allow_multi = get_post_meta( $post->ID, '_allow_multi', true);
+
+		$allow_multi_checked = '';
+		if ( $allow_multi === 'yes' ) {
+			$allow_multi_checked = 'checked="checked"';
+		}
 
 		// Create Nonce Field
 		wp_nonce_field( plugin_basename( __FILE__ ), '_wpbo_rule_value_nonce' );
 
-		// TODO: Add checkbox below for "Allow Multiple Products (in category) to Fullfill Minimum"
 		?>
 			<div class="wpbo-meta">
 				<label for="min">Minimum</label>
@@ -215,6 +220,9 @@ class WC_Quantities_and_Units_Quantity_Rule_Post_Type {
 				<label for="priority">Priority</label>
 				<input type="number" name="priority" id="priority" value="<?php echo $priority ?>" />
 			</div>
+			<p><label for="allow_multi"><input type="checkbox" name="allow_multi" id="allow_multi" value="yes" <?php echo $allow_multi_checked; ?> />
+				Allow multiple products in the selected categories to fulfill this rule.</label>
+			</p>
 			<p><em>*Note - the minimum value must be greater then or equal to the step value.</em><br />
 			<em>*Note - The rule with the lowest priority number will be used if multiple rules are applied to a single product.</em></p>
 		<?php
@@ -472,8 +480,6 @@ class WC_Quantities_and_Units_Quantity_Rule_Post_Type {
 	*/
 	public function save_quantity_rule_meta( $post_id ) {
 
-		// TODO: Will need to save the new "allow multi product" field below
-
 		// Validate Post Type
 		if ( ! isset( $_POST['post_type'] ) or $_POST['post_type'] !== 'quantity-rule' ) {
 			return;
@@ -563,6 +569,11 @@ class WC_Quantities_and_Units_Quantity_Rule_Post_Type {
 			update_post_meta( $post_id, '_priority', wcqu_validate_number( $_POST['priority'] ) );
 		}
 
+		if ( isset( $_POST['allow_multi'] ) ) {
+			update_post_meta( $post_id, '_allow_multi', 'yes' );
+		} else {
+			update_post_meta( $post_id, '_allow_multi', 'no' );
+		}
 	}
 
 	/*
