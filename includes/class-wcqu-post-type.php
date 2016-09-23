@@ -203,16 +203,16 @@ class WC_Quantities_and_Units_Quantity_Rule_Post_Type {
 				<label for="max">Maximum</label>
 				<input type="number" name="max" id="max" value="<?php echo $max ?>" step="any" />
 
-				<label for="_wpbo_minimum_oos">Out of Stock Minimum</label>
-				<input type="number" name="min_oos" value="<?php echo $min_oos ?>" step="any" />
+				<label for="min_oos">Out of Stock Minimum</label>
+				<input type="number" name="min_oos" id="min_oos" value="<?php echo $min_oos ?>" step="any" />
 
-				<label for="_wpbo_maximum_oos">Out of Stock Maximum</label>
-				<input type="number" name="max_oos" value="<?php echo $max_oos ?>" step="any" />
+				<label for="max_oos">Out of Stock Maximum</label>
+				<input type="number" name="max_oos" id="max_oos" value="<?php echo $max_oos ?>" step="any" />
 
 				<label for="step">Step Value</label>
 				<input type="number" step="any" name="step" id="step" value="<?php echo $step ?>" step="any" />
 
-				<label for="step">Priority</label>
+				<label for="priority">Priority</label>
 				<input type="number" name="priority" id="priority" value="<?php echo $priority ?>" />
 			</div>
 			<p><em>*Note - the minimum value must be greater then or equal to the step value.</em><br />
