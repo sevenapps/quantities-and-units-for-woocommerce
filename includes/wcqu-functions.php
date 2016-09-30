@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
 *	Given the product, this will check which rule is being applied to a product
 * 	If there is a rule, the values will be returned otherwise it is inactive
@@ -154,7 +154,8 @@ function wcqu_get_value_from_rule( $type, $product, $rule ) {
 		 $type != 'priority' and
 		 $type != 'role' and
 		 $type != 'min_oos' and
-		 $type != 'max_oos'
+		 $type != 'max_oos' and
+		 $type != 'allow_multi'
 		) {
 		return null;
 
@@ -311,6 +312,7 @@ function wcqu_get_value_from_rule( $type, $product, $rule ) {
 						'max_oos'	=> get_post_meta( $rule->ID, '_max_oos', true ),
 						'step' 		=> get_post_meta( $rule->ID, '_step', true ),
 						'priority'  => get_post_meta( $rule->ID, '_priority', true ),
+						'allow_multi'  => get_post_meta( $rule->ID, '_allow_multi', true ),
 						'roles' 	=> get_post_meta( $rule->ID, '_roles', true )
 					);
 				break;
@@ -333,6 +335,10 @@ function wcqu_get_value_from_rule( $type, $product, $rule ) {
 
 			case 'step':
 				return get_post_meta( $rule->ID, '_step', true );
+				break;
+
+			case 'allow_multi':
+				return get_post_meta( $rule->ID, '_allow_multi', true );
 				break;
 
 			case 'role':

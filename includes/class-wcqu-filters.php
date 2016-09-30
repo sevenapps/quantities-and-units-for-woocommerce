@@ -22,6 +22,8 @@ class WC_Quantities_and_Units_Filters {
 		// price_html_filter() should add something like: "<span class="wholesale_price_minimum_order_quantity">Min: 4</span>"
 		// NOTE: Need to check and see what the WC filter does and if we need to copy and modify that.
 		// could look at what 'woocommerce-wholesales-prices( and/or -premium)' is doing with this filter
+
+		add_filter( 'woocommerce_check_cart_items', array( $this, 'check_cart_items' ), 10 );
 	}
 
 	/**
@@ -74,7 +76,7 @@ class WC_Quantities_and_Units_Filters {
 	public function input_min_value( $default, $product ) {
 
 		// Return Defaults if it isn't a simple product
-		if( $product->product_type != 'simple' ) {
+		if ( $product->product_type != 'simple' ) {
 			return $default;
 		}
 
@@ -134,7 +136,7 @@ class WC_Quantities_and_Units_Filters {
 	public function input_step_value( $default, $product ) {
 
 		// Return Defaults if it isn't a simple product
-		if( $product->product_type != 'simple' ) {
+		if ( $product->product_type != 'simple' ) {
 			return $default;
 		}
 
@@ -143,9 +145,10 @@ class WC_Quantities_and_Units_Filters {
 
 		// Get Value from Rule
 		$step = wcqu_get_value_from_rule( 'step', $product, $rule );
+		$allow_multi = wcqu_get_value_from_rule( 'allow_multi', $product, $rule );
 
 		// Return Value
-		if ( $step == '' or $step == null or (isset($step['step']) and $step['step'] == "")) {
+		if ( $allow_multi === 'yes' or $step == '' or $step == null or (isset($step['step']) and $step['step'] == "") ) {
 			return $default;
 		} else {
 			return isset($step['step']) ? $step['step'] : $step;
@@ -192,12 +195,12 @@ class WC_Quantities_and_Units_Filters {
 			$args['min_value'] = $values['min_oos'];
 
 		// Otherwise just check normal min
-		} elseif ( $values['min_value'] != ''  ) {
-			$args['min_value'] 	 = $values['min_value'];
+		} elseif ( $values['allow_multi'] === 'no' and $values['min_value'] != '' ) {
+			$args['min_value'] = $values['min_value'];
 
 		// If no min, try step
-		} elseif ( $values['min_value'] == '' and $values['step'] != '' ) {
-			$args['min_value'] 	 = $values['step'];
+		} elseif ( $values['allow_multi'] === 'no' and $values['min_value'] == '' and $values['step'] != '' ) {
+			$args['min_value'] = $values['step'];
 		}
 
 		// Check stock status and if Out try Out of Stock value
@@ -205,16 +208,79 @@ class WC_Quantities_and_Units_Filters {
 			$args['max_value'] = $values['max_oos'];
 
 		// Otherwise just check normal max
-		} elseif ($values['max_value'] != ''  ) {
-			$args['max_value'] 	 = $values['max_value'];
+		} elseif ( $values['allow_multi'] === 'no' and $values['max_value'] != ''  ) {
+			$args['max_value'] = $values['max_value'];
 		}
 
 		// Set step value
-		if ( $values['step'] != '' ) {
+		if ( $values['allow_multi'] === 'no' and $values['step'] != '' ) {
 			$args['step'] = $values['step'];
 		}
 
 		return $args;
+	}
+
+	public function check_cart_items() {
+		$rules = array();
+
+		foreach ( WC()->cart->get_cart() as $cart_item ) {
+			$product = get_product( $cart_item['product_id'] );
+			$rule = wcqu_get_applied_rule( $product );
+			$values = wcqu_get_value_from_rule( 'all', $product, $rule );
+
+			// No Rules? Skip to next
+			if ( $values == null ) {
+				continue;
+			}
+
+			if ( $values['allow_multi'] != 'yes' ) {
+				$QuantityValidations = new WC_Quantities_and_Units_Quantity_Validations();
+				$QuantityValidations->validate_single_product( true, $product->post->ID, $cart_item['quantity'], true, $cart_item['variation_id'], $cart_item['variation'] );
+				continue;
+			}
+
+			// Do initial setup of rule tracking
+			if ( !isset( $rules[ $rule->ID ] ) ) {
+				$cat_id = get_post_meta( $rule->ID, '_cats' )[0][0];
+				$rules[ $rule->ID ] = array(
+					'rule'     => $rule,
+					'values'   => $values,
+					'cart_qty' => 0,
+					'cat_name' => get_cat_name( $cat_id ),
+					'cat_link' => get_category_link( $cat_id ),
+				);
+			}
+
+			$rules[ $rule->ID ]['cart_qty'] += $cart_item['quantity'];
+		}
+
+		foreach ( $rules as $rule_id => $rule ) {
+			if ( $rule['values']['allow_multi'] !== 'yes' ) {
+				continue;
+			}
+
+			$qty = (float) $rule['cart_qty'];
+
+			$min_value = (float) $rule['values']['min_value'];
+			if ( $min_value > $qty ) {
+				wc_add_notice( sprintf( __( "Your cart must have a minimum of %s <a href=\"%s\" style=\"text-decoration: underline\">%s</a> products to proceed.", 'woocommerce' ), $min_value, $rule['cat_link'], $rule['cat_name'] ), 'error' );
+				return false;
+			}
+
+			$max_value = (float) $rule['values']['max_value'];
+			if ( $max > 0 && $max_value < $qty ) {
+				wc_add_notice( sprintf( __( "You may only add a maximum of %s <a href=\"%s\" style=\"text-decoration: underline\">%s</a> products to your cart.", 'woocommerce' ), $max_value, $rule['cat_link'], $rule['cat_name'] ), 'error' );
+				return false;
+			}
+
+			$step = (float) $rule['values']['step'];
+			if ( $step != 0 and $qty % $step != 0 ) {
+				wc_add_notice( sprintf( __( "You may only add <a href=\"%s\" style=\"text-decoration: underline\">%s</a> products in multiples of %s to your cart.", 'woocommerce' ), $rule['cat_link'], $rule['cat_name'], $step ), 'error' );
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 }

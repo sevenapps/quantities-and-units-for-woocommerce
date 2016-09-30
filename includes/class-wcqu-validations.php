@@ -96,7 +96,7 @@ class WC_Quantities_and_Units_Quantity_Validations {
 
 		// Min Validation
 		// added $min_value != 0 since List Items starts all products at 0 quantity.
-		if ( $min_value != null && $min_value != 0 && $quantity < $min_value ) {
+		if ( $min_value != null && $min_value != 0 && $quantity < $min_value && $allow_multi === 'no' ) {
 
 			if ( $WC_Quantities_and_Units->wc_version >= 2.1 ) {
 				wc_add_notice( sprintf( __( "You must add a minimum of %s %s's to your cart.", 'woocommerce' ), $min_value, $title ), 'error' );
@@ -110,7 +110,7 @@ class WC_Quantities_and_Units_Quantity_Validations {
 		}
 
 		// Max Validation
-		if ( $max_value != null && $quantity > $max_value ) {
+		if ( $max_value != null && $quantity > $max_value && $allow_multi === 'no' ) {
 
 			if ( $WC_Quantities_and_Units->wc_version >= 2.1 ) {
 				wc_add_notice( sprintf( __( "You may only add a maximum of %s %s's to your cart.", 'woocommerce' ), $max_value, $title ), 'error' );
@@ -133,7 +133,7 @@ class WC_Quantities_and_Units_Quantity_Validations {
 		$step = (float)$step;
 
 		// Step Validation
-		if ( $step != null && wcqu_fmod_round($rem_qty, $step) != 0 ) {
+		if ( $step != null && wcqu_fmod_round($rem_qty, $step) != 0 && $allow_multi === 'no' ) {
 
 			if ( $WC_Quantities_and_Units->wc_version >= 2.1 ) {
 				wc_add_notice( sprintf( __( "You may only add a %s in multiples of %s to your cart.", 'woocommerce' ), $title, $step ), 'error' );

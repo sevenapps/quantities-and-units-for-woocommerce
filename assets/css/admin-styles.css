@@ -18,7 +18,7 @@
 	margin: 8px 0 0;
 	width: 100px;
 }
-.wpbo-meta input {
+.wpbo-meta input, .wpbo-meta select {
 	float: left;
 	margin: 5px 0;
 	padding-right: 15px;

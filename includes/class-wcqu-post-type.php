@@ -17,7 +17,7 @@ class WC_Quantities_and_Units_Quantity_Rule_Post_Type {
 
 		// Add custom meta boxes
 		add_action( 'add_meta_boxes', array( $this, 'quantity_rule_meta_init' 	) );
-		add_action( 'add_meta_boxes', array( $this, 'quantity_rule_tax_init' 	) );
+		// add_action( 'add_meta_boxes', array( $this, 'quantity_rule_tax_init' 	) );
 		add_action( 'add_meta_boxes', array( $this, 'quantity_rule_tag_init' 	) );
 		add_action( 'add_meta_boxes', array( $this, 'quantity_rule_role_init' 	) );
 		add_action( 'add_meta_boxes', array( $this, 'rate_us_notice' 			) );
@@ -184,8 +184,8 @@ class WC_Quantities_and_Units_Quantity_Rule_Post_Type {
 
 	public function quantity_rule_meta( $post ) {
 
-		$min  = get_post_meta( $post->ID, '_min', true);
-		$max  = get_post_meta( $post->ID, '_max', true);
+		$min = get_post_meta( $post->ID, '_min', true);
+		$max = get_post_meta( $post->ID, '_max', true);
 		$min_oos = get_post_meta( $post->ID, '_min_oos', true );
 		$max_oos = get_post_meta( $post->ID, '_max_oos', true );
 		$step = get_post_meta( $post->ID, '_step', true);
@@ -197,12 +197,40 @@ class WC_Quantities_and_Units_Quantity_Rule_Post_Type {
 			$allow_multi_checked = 'checked="checked"';
 		}
 
+		// Get selected categories
+		$cats = get_post_meta( $post->ID, '_cats', false);
+
+		if ( $cats != null ) {
+			$cats = $cats[0];
+		}
+
+		// Get all possible categories
+		$tax_name = 'product_cat';
+
+		$args = array(
+			'parent' => 0,
+			'hide_empty' => false
+		);
+
+		$terms = get_terms( $tax_name, $args );
+
 		// Create Nonce Field
 		wp_nonce_field( plugin_basename( __FILE__ ), '_wpbo_rule_value_nonce' );
 
 		?>
 			<div class="wpbo-meta">
-				<label for="min">Minimum</label>
+				<?php
+				if ( $terms ) {
+					echo '<label for="cat">Category</label>';
+					echo '<select name="cat">';
+					foreach ( $terms as $term ) {
+						$this->print_tax_options( $term, $tax_name, $cats, 1 );
+					}
+					echo '</select>';
+				}
+				?>
+
+				<label for="min">Minimum*</label>
 				<input type="number" name="min" id="min" value="<?php echo $min ?>" step="any" />
 
 				<label for="max">Maximum</label>
@@ -217,15 +245,44 @@ class WC_Quantities_and_Units_Quantity_Rule_Post_Type {
 				<label for="step">Step Value</label>
 				<input type="number" step="any" name="step" id="step" value="<?php echo $step ?>" step="any" />
 
-				<label for="priority">Priority</label>
+				<label for="priority">Priority**</label>
 				<input type="number" name="priority" id="priority" value="<?php echo $priority ?>" />
 			</div>
 			<p><label for="allow_multi"><input type="checkbox" name="allow_multi" id="allow_multi" value="yes" <?php echo $allow_multi_checked; ?> />
 				Allow multiple products in the selected categories to fulfill this rule.</label>
 			</p>
 			<p><em>*Note - the minimum value must be greater then or equal to the step value.</em><br />
-			<em>*Note - The rule with the lowest priority number will be used if multiple rules are applied to a single product.</em></p>
+			<em>**Note - The rule with the lowest priority number will be used if multiple rules are applied to a single product.</em></p>
 		<?php
+	}
+
+	/*
+	*	Will Recursivly Print all Product Categories with heirarcy included
+	*/
+	public function print_tax_options( $term, $taxonomy_name, $cats, $level ) {
+
+		// Echo Single Item
+		?>
+		<option value="<?php echo $term->term_id ?>" <?php if ( is_array( $cats ) and in_array( $term->term_id, $cats ) ) echo 'selected="selected"' ?>>
+			<?php echo $level > 1 ? '- ' : ''; echo $term->name; ?></option>
+		<?php
+
+		// Get any Children
+		$children = get_term_children( $term->term_id, $taxonomy_name );
+
+		// Continue to print children if they exist
+		if ( $children ) {
+			// echo '<ul class="level-' . $level . '">';
+			$level++;
+			foreach ( $children as $child_id ) {
+				$child = get_term_by( 'id', $child_id, $taxonomy_name );
+				// If the child is at the second level relative to the last printed element, exclude it
+				if ( is_object( $child ) and $child->parent == $term->term_id ) {
+					$this->print_tax_options( $child, $taxonomy_name, $cats, $level );
+				}
+			}
+			// echo '</ul>';
+		}
 	}
 
 	/*
@@ -502,12 +559,18 @@ class WC_Quantities_and_Units_Quantity_Rule_Post_Type {
 			delete_transient( 'ipq_rules_' . $slug );
 		}
 
-		//Also delete the guest transient, which is not a role
-
+		// Also delete the guest transient, which is not a role
 		delete_transient( 'ipq_rules_guest' );
 
+		$cats = array();
+		if ( isset( $_POST['cat'] ) ) {
+			$cats = array( $_POST['cat'] );
+			delete_post_meta( $post_id, '_cats' );
+			update_post_meta( $post_id, '_cats', $cats, false );
+		}
+
 		// Make sure $min >= step
-		if( isset( $_POST['min'] ) ) {
+		if ( isset( $_POST['min'] ) ) {
 			$min = $_POST['min'];
 		}
 

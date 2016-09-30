@@ -43,11 +43,11 @@ class WC_Quantities_and_Units {
 
 		// Include Required Files
 		require_once( 'includes/wcqu-functions.php' );
+		require_once( 'includes/class-wcqu-validations.php' );
 		require_once( 'includes/class-wcqu-filters.php' );
 		require_once( 'includes/class-wcqu-actions.php' );
 		require_once( 'includes/class-wcqu-product-meta-box.php' );
 		require_once( 'includes/class-wcqu-post-type.php' );
-		require_once( 'includes/class-wcqu-validations.php' );
 		require_once( 'includes/class-wcqu-advanced-rules.php' );
 		require_once( 'includes/class-wcqu-units-box.php' );
 		require_once( 'includes/class-wcqu-product-unit.php' );
