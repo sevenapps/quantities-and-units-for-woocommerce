@@ -20,9 +20,9 @@ class WC_Quantities_and_Units_Quantity_Rule_Post_Type {
 		// add_action( 'add_meta_boxes', array( $this, 'quantity_rule_tax_init' 	) );
 		add_action( 'add_meta_boxes', array( $this, 'quantity_rule_tag_init' 	) );
 		add_action( 'add_meta_boxes', array( $this, 'quantity_rule_role_init' 	) );
-		add_action( 'add_meta_boxes', array( $this, 'rate_us_notice' 			) );
-//		add_action( 'add_meta_boxes', array( $this, 'input_thumbnail_notice' 	) );
-//		add_action( 'add_meta_boxes', array( $this, 'company_notice' 			) );
+		// add_action( 'add_meta_boxes', array( $this, 'rate_us_notice' 			) );
+		// add_action( 'add_meta_boxes', array( $this, 'input_thumbnail_notice' 	) );
+		// add_action( 'add_meta_boxes', array( $this, 'company_notice' 			) );
 
 		// Save post meta on post update
 		add_action( 'save_post', array( $this, 'save_quantity_rule_meta'  ) );
