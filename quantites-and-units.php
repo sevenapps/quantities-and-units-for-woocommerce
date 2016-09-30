@@ -3,9 +3,9 @@
 Plugin Name: Quantities and Units for WooCommerce
 Plugin URI: https://wordpress.org/plugins/quantities-and-units-for-woocommerce/
 Description: Easily require your customers to buy a minimum / maximum / incremental amount of products to continue with their checkout.
-Version: 1.0.10
-Author: Nicholas Verwymeren
-Author URI: https://www.nickv.codes
+Version: 1.1.0
+Author: 7/Apps Inc
+Author URI: http://7apps.com
 */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
