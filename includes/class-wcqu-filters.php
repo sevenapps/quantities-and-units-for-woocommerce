@@ -268,7 +268,7 @@ class WC_Quantities_and_Units_Filters {
 			}
 
 			$max_value = (float) $rule['values']['max_value'];
-			if ( $max > 0 && $max_value < $qty ) {
+			if ( $max_value > 0 && $max_value < $qty ) {
 				wc_add_notice( sprintf( __( "You may only add a maximum of %s <a href=\"%s\" style=\"text-decoration: underline\">%s</a> products to your cart.", 'woocommerce' ), $max_value, $rule['cat_link'], $rule['cat_name'] ), 'error' );
 				return false;
 			}
