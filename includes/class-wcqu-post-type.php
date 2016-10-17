@@ -443,12 +443,14 @@ class WC_Quantities_and_Units_Quantity_Rule_Post_Type {
 			<ul>
 				<?php foreach ( $roles as $slug => $name ): ?>
 					<li>
-						<input type='checkbox' name='_wpbo_role_<?php echo $slug ?>' id='wpbo_role_<?php echo $slug ?>'  <?php if( in_array( $slug, $applied_roles ) || empty($applied_roles) ) echo 'checked' ?> />
-						<?php echo $name; ?>
+						<label for='wpbo_role_<?php echo $slug ?>'>
+							<input type='checkbox' name='_wpbo_role_<?php echo $slug ?>' id='wpbo_role_<?php echo $slug ?>'  <?php if( in_array( $slug, $applied_roles ) ) echo 'checked' ?> />
+							<?php echo $name; ?>
+						</label>
 					</li>
 				<?php endforeach; ?>
 				<li>
-					<input type='checkbox' name='_wpbo_role_guest' id='wpbo_role_guest'  <?php if( in_array( 'guest', $applied_roles ) || empty($applied_roles) ) echo 'checked' ?> />
+					<input type='checkbox' name='_wpbo_role_guest' id='wpbo_role_guest'  <?php if( in_array( 'guest', $applied_roles ) ) echo 'checked' ?> />
 				Guest
 				</li>
 			</ul>
