@@ -146,9 +146,13 @@ class WC_Quantities_and_Units_Filters {
 		// Get Value from Rule
 		$step = wcqu_get_value_from_rule( 'step', $product, $rule );
 		$allow_multi = wcqu_get_value_from_rule( 'allow_multi', $product, $rule );
+		$keep_product_step = wcqu_get_value_from_rule( 'keep_product_step', $product, $rule );
 
 		// Return Value
-		if ( $allow_multi === 'yes' or $step == '' or $step == null or (isset($step['step']) and $step['step'] == "") ) {
+		if (
+			( $allow_multi === 'yes' && $keep_product_step === 'yes' ) &&
+			$step == '' or $step == null or ( isset( $step['step'] ) and $step['step'] == '' )
+		) {
 			return $default;
 		} else {
 			return isset($step['step']) ? $step['step'] : $step;
@@ -233,9 +237,12 @@ class WC_Quantities_and_Units_Filters {
 				continue;
 			}
 
-			if ( $values['allow_multi'] != 'yes' ) {
+			if ( $values['allow_multi'] != 'yes' || $values['keep_product_step'] === 'yes' ) {
 				$QuantityValidations = new WC_Quantities_and_Units_Quantity_Validations();
 				$QuantityValidations->validate_single_product( true, $product->post->ID, $cart_item['quantity'], true, $cart_item['variation_id'], $cart_item['variation'] );
+			}
+
+			if ( $values['allow_multi'] != 'yes' ) {
 				continue;
 			}
 

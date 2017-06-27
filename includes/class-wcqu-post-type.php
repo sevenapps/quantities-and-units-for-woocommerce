@@ -195,11 +195,17 @@ class WC_Quantities_and_Units_Quantity_Rule_Post_Type {
 		$max_oos = get_post_meta( $post->ID, '_max_oos', true );
 		$step = get_post_meta( $post->ID, '_step', true);
 		$priority = get_post_meta( $post->ID, '_priority', true);
-		$allow_multi = get_post_meta( $post->ID, '_allow_multi', true);
 
+		$allow_multi = get_post_meta( $post->ID, '_allow_multi', true);
 		$allow_multi_checked = '';
 		if ( $allow_multi === 'yes' ) {
 			$allow_multi_checked = 'checked="checked"';
+		}
+
+		$keep_product_step = get_post_meta( $post->ID, '_keep_product_step', true);
+		$keep_product_step_checked = '';
+		if ( $keep_product_step === 'yes' ) {
+			$keep_product_step_checked = 'checked="checked"';
 		}
 
 		// Get selected categories
@@ -255,6 +261,9 @@ class WC_Quantities_and_Units_Quantity_Rule_Post_Type {
 			</div>
 			<p><label for="allow_multi"><input type="checkbox" name="allow_multi" id="allow_multi" value="yes" <?php echo $allow_multi_checked; ?> />
 				Allow multiple products in the selected categories to fulfill this rule.</label>
+			</p>
+			<p><label for="keep_product_step"><input type="checkbox" name="keep_product_step" id="keep_product_step" value="yes" <?php echo $keep_product_step_checked; ?> />
+				Enforce step value on individual products when allow multiple rule is checked.</label>
 			</p>
 			<p><em>*Note - the minimum value must be greater then or equal to the step value.</em><br />
 			<em>**Note - The rule with the lowest priority number will be used if multiple rules are applied to a single product.</em></p>
@@ -643,6 +652,12 @@ class WC_Quantities_and_Units_Quantity_Rule_Post_Type {
 			update_post_meta( $post_id, '_allow_multi', 'yes' );
 		} else {
 			update_post_meta( $post_id, '_allow_multi', 'no' );
+		}
+
+		if ( isset( $_POST['keep_product_step'] ) ) {
+			update_post_meta( $post_id, '_keep_product_step', 'yes' );
+		} else {
+			update_post_meta( $post_id, '_keep_product_step', 'no' );
 		}
 	}
 

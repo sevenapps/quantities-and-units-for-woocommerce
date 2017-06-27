@@ -155,7 +155,8 @@ function wcqu_get_value_from_rule( $type, $product, $rule ) {
 		 $type != 'role' and
 		 $type != 'min_oos' and
 		 $type != 'max_oos' and
-		 $type != 'allow_multi'
+		 $type != 'allow_multi' and
+		 $type != 'keep_product_step'
 		) {
 		return null;
 
@@ -263,6 +264,18 @@ function wcqu_get_value_from_rule( $type, $product, $rule ) {
 			$step = '';
 		}
 
+		if( isset( $options['ipq_site_allow_multi'] ) ) {
+			$allow_multi = $options['ipq_site_allow_multi'];
+		} else {
+			$allow_multi = '';
+		}
+
+		if( isset( $options['ipq_site_keep_product_step'] ) ) {
+			$keep_product_step = $options['ipq_site_keep_product_step'];
+		} else {
+			$keep_product_step = '';
+		}
+
 		switch ( $type ) {
 			case 'all':
 				return array(
@@ -270,7 +283,9 @@ function wcqu_get_value_from_rule( $type, $product, $rule ) {
 					'max_value' => $max,
 					'min_oos' 	=> $min_oos,
 					'max_oos' 	=> $max_oos,
-					'step' 		=> $step
+					'step' 		=> $step,
+					'allow_multi' => $allow_multi,
+					'keep_product_step' => $keep_product_step,
 				);
 				break;
 
@@ -294,6 +309,14 @@ function wcqu_get_value_from_rule( $type, $product, $rule ) {
 				return array( 'step' => $step );
 				break;
 
+			case 'allow_multi':
+				return array( 'allow_multi' => $allow_multi );
+				break;
+
+			case 'keep_product_step':
+				return array( 'keep_product_step' => $keep_product_step );
+				break;
+
 			case 'priority':
 				return null;
 				break;
@@ -313,6 +336,7 @@ function wcqu_get_value_from_rule( $type, $product, $rule ) {
 						'step' 		=> get_post_meta( $rule->ID, '_step', true ),
 						'priority'  => get_post_meta( $rule->ID, '_priority', true ),
 						'allow_multi'  => get_post_meta( $rule->ID, '_allow_multi', true ),
+						'keep_product_step'  => get_post_meta( $rule->ID, '_keep_product_step', true ),
 						'roles' 	=> get_post_meta( $rule->ID, '_roles', true )
 					);
 				break;
@@ -339,6 +363,10 @@ function wcqu_get_value_from_rule( $type, $product, $rule ) {
 
 			case 'allow_multi':
 				return get_post_meta( $rule->ID, '_allow_multi', true );
+				break;
+
+			case 'keep_product_step':
+				return get_post_meta( $rule->ID, '_keep_product_step', true );
 				break;
 
 			case 'role':

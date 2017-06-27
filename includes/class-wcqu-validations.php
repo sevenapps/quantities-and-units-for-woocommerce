@@ -75,7 +75,7 @@ class WC_Quantities_and_Units_Quantity_Validations {
 		$values = wcqu_get_value_from_rule( 'all', $product, $rule );
 
 		if ( $values != null )
-			extract( $values ); // $min_value, $max_value, $step, $priority, $min_oos, $max_oos
+			extract( $values ); // $min_value, $max_value, $step, $priority, $min_oos, $max_oos, $allow_multi, $keep_product_step
 
 		// Inactive Products can be ignored
 		if ( $values == null )
@@ -133,7 +133,10 @@ class WC_Quantities_and_Units_Quantity_Validations {
 		$step = (float)$step;
 
 		// Step Validation
-		if ( $step != null && wcqu_fmod_round($rem_qty, $step) != 0 && $allow_multi === 'no' ) {
+		if (
+			$step != null && wcqu_fmod_round($rem_qty, $step) != 0
+			&& ( $allow_multi === 'no' || $keep_product_step === 'yes' )
+		) {
 
 			if ( $WC_Quantities_and_Units->wc_version >= 2.1 ) {
 				wc_add_notice( sprintf( __( "You may only add a %s in multiples of %s to your cart.", 'woocommerce' ), $title, $step ), 'error' );
