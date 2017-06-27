@@ -94,67 +94,72 @@ class WC_Quantities_and_Units_Quantity_Rule_Post_Type {
 	*	Get Custom Columns Values for List View
 	*/
 	public function manage_quantity_rule_columns($column_name, $id) {
-
-		switch ($column_name) {
-
-			case 'priority':
-				echo get_post_meta( $id, '_priority', true );
-				break;
-
-			case 'min':
-				echo get_post_meta( $id, '_min', true );
-				break;
-
-			case 'max':
-				echo get_post_meta( $id, '_max', true );
-				break;
-
-			case 'step':
-				echo get_post_meta( $id, '_step', true );
-				break;
+	    
+	    switch ($column_name) {
+	    
+		    case 'priority':
+		        echo get_post_meta( $id, '_priority', true );
+		        break;
+		 
+		    case 'min':
+	   	        echo get_post_meta( $id, '_min', true );
+		        break;
+		        
+		    case 'max':
+	   	        echo get_post_meta( $id, '_max', true );
+		        break;
+		        
+		    case 'step':
+		        echo get_post_meta( $id, '_step', true );	       
+		        break;
 
 			case 'cats':
 				$cats = get_post_meta( $id, '_cats', false);
 				if ( $cats != false and count( $cats[0] ) > 0 ) {
-					foreach ( $cats[0] as $cat ){
+					foreach ( $cats[0] as $cat ) {
 
 						$taxonomy = 'product_cat';
 						$term = get_term_by( 'id', $cat, $taxonomy );
 						$link = get_term_link( $term );
 
-						echo "<a href='" . $link . "'>" . $term->name . "</a><br />";
-					}
-				}
-				break;
-
-			case 'product_tags':
-				$tags = get_post_meta( $id, '_tags', false);
-				if ( $tags != null and count( $tags[0] ) > 0) {
-					foreach ( $tags[0] as $tag ){
-
-						$taxonomy = 'product_tag';
-						$term = get_term_by( 'id', $tag, $taxonomy );
-						$link = get_term_link( $term );
+						if ( !$term || is_wp_error( $link ) ) {
+							echo "Unknown / Deleted Category<br />";
+							continue;
+						}
 
 						echo "<a href='" . $link . "'>" . $term->name . "</a><br />";
 					}
 				}
 				break;
 
-			case 'roles':
-				$roles = get_post_meta( $id, '_roles', false);
-				if ( $roles != null and count( $roles[0] ) > 0) {
-					foreach ( $roles[0] as $role ){
-						echo ucfirst( $role ) . "<br />";
-					}
-				}
-				break;
-
-			default:
-				break;
-		}
-	}
-
+		    case 'product_tags':
+		    	$tags = get_post_meta( $id, '_tags', false);
+		   		if ( $tags != null and count( $tags[0] ) > 0) {	   		
+			   		foreach ( $tags[0] as $tag ){
+		
+			   			$taxonomy = 'product_tag'; 	
+				   		$term = get_term_by( 'id', $tag, $taxonomy );
+			   			$link = get_term_link( $term );	
+			   			
+			   			echo "<a href='" . $link . "'>" . $term->name . "</a><br />";	
+			   		}
+			   	} 
+		    	break;
+		    
+		    case 'roles':
+		   		$roles = get_post_meta( $id, '_roles', false);
+		   		if ( $roles != null and count( $roles[0] ) > 0) {	   		
+			   		foreach ( $roles[0] as $role ){
+			   			echo ucfirst( $role ) . "<br />";	
+			   		}
+			   	} 
+		    	break;
+		    	
+		    default:
+		        break;
+	    } 
+	}   
+	
 	/*
 	*	Make Custom Columns Sortable
 	*/
